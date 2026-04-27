@@ -2,6 +2,10 @@ import { getMonthTrades, getMonthNotes, getMonthPsych } from '@/lib/db'
 import CalendarShell from '@/components/calendar/CalendarShell'
 import type { MonthData } from '@/types'
 
+// Always fetch fresh — no caching
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 interface Props {
   searchParams: { year?: string; month?: string }
 }
@@ -37,7 +41,9 @@ export default async function CalendarPage({ searchParams }: Props) {
     <div className='max-w-4xl mx-auto space-y-4 sm:space-y-5'>
       <div>
         <h1 className='text-lg sm:text-xl font-semibold text-zinc-100'>Trading Calendar</h1>
-        <p className='text-xs sm:text-sm text-zinc-500 mt-0.5'>Klik tanggal untuk tambah trade, lihat news, atau tulis journal</p>
+        <p className='text-xs sm:text-sm text-zinc-500 mt-0.5'>
+          Klik tanggal untuk tambah trade, lihat news, atau tulis journal
+        </p>
       </div>
 
       <div className='grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3' role='region' aria-label='Statistik bulan ini'>

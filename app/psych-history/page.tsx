@@ -2,6 +2,10 @@ import { getAllPsych, getAllTrades } from '@/lib/db'
 import { verdictStyle, formatPnl, pnlColor, cn } from '@/lib/utils'
 import { CheckCircle, XCircle, AlertCircle } from 'lucide-react'
 
+// Always fetch fresh — no caching
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function PsychHistoryPage() {
   const [results, trades] = await Promise.all([getAllPsych(), getAllTrades()])
   const tradeByDate: Record<string,{pnl:number;count:number}> = {}

@@ -2,6 +2,10 @@ import { getAllTrades, getAllNotes, getMonthTrades } from '@/lib/db'
 import { MONTHS } from '@/lib/constants'
 import { formatPnl, pnlColor, cn } from '@/lib/utils'
 
+// Always fetch fresh — no caching
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 interface Props { searchParams: { year?: string } }
 
 export default async function AnalyticsPage({ searchParams }: Props) {

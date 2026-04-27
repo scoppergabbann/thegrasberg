@@ -2,6 +2,10 @@ import { getAllNotes, getAllTrades } from '@/lib/db'
 import { MOOD_COLORS } from '@/lib/constants'
 import { formatPnl, pnlColor, cn } from '@/lib/utils'
 
+// Always fetch fresh — no caching
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function JournalPage() {
   const [notes, trades] = await Promise.all([getAllNotes(), getAllTrades()])
   const tradeByDate: Record<string,number> = {}
