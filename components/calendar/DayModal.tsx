@@ -1,4 +1,3 @@
-
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
@@ -15,7 +14,7 @@ const TABS: {id:Tab;label:string}[] = [
   {id:'trades',  label:'Trades'},
   {id:'news',    label:'News'},
   {id:'journal', label:'Journal'},
-  {id:'psych',   label:'Psych Test'},
+  {id:'psych',   label:'Psych'},
 ]
 
 interface Props { year:number; month:number; day:number; monthData:MonthData; onClose:()=>void }
@@ -26,7 +25,7 @@ export default function DayModal({ year, month, day, monthData, onClose }: Props
   const closeRef = useRef<HTMLButtonElement>(null)
   const key = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`
   const dow = new Date(year,month,day).getDay()
-  const dateStr = `${'Minggu Senin Selasa Rabu Kamis Jumat Sabtu'.split(' ')[dow]}, ${day} ${MONTHS[month]} ${year}`
+  const dateStr = `${'Min Sen Sel Rab Kam Jum Sab'.split(' ')[dow]}, ${day} ${MONTHS[month]} ${year}`
 
   useEffect(() => {
     closeRef.current?.focus()
@@ -46,19 +45,19 @@ export default function DayModal({ year, month, day, monthData, onClose }: Props
   }, [onClose])
 
   return (
-    <div className='fixed inset-0 z-50 flex items-start justify-center p-4 pt-12 overflow-y-auto bg-black/75'
+    <div className='fixed inset-0 z-50 flex items-end sm:items-start justify-center sm:p-4 sm:pt-12 overflow-y-auto bg-black/75'
       role='dialog' aria-modal='true' aria-labelledby='modal-title'
       onClick={e => e.target===e.currentTarget && onClose()}>
-      <div ref={ref} className='w-full max-w-xl bg-[#111] border border-zinc-700 rounded-2xl shadow-2xl'>
-        <div className='flex items-center justify-between px-5 py-4 border-b border-zinc-800'>
-          <h2 id='modal-title' className='mono text-sm font-semibold'>{dateStr}</h2>
+      <div ref={ref} className='w-full sm:max-w-xl bg-[#111] border border-zinc-700 rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[92vh] sm:max-h-[88vh] flex flex-col'>
+        <div className='flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-zinc-800 shrink-0'>
+          <h2 id='modal-title' className='mono text-sm font-semibold truncate'>{dateStr}</h2>
           <button ref={closeRef} onClick={onClose}
-            className='w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all focus-visible:outline-2 focus-visible:outline-zinc-400'
+            className='w-8 h-8 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all focus-visible:outline-2 focus-visible:outline-zinc-400 shrink-0 ml-2'
             aria-label='Tutup dialog'>
             <X className='w-4 h-4' aria-hidden='true' />
           </button>
         </div>
-        <div className='flex border-b border-zinc-800' role='tablist' aria-label='Panel hari ini'>
+        <div className='flex border-b border-zinc-800 shrink-0' role='tablist' aria-label='Panel hari ini'>
           {TABS.map(t => (
             <button key={t.id} role='tab' id={`tab-${t.id}`}
               aria-selected={tab===t.id} aria-controls={`panel-${t.id}`}
@@ -69,7 +68,7 @@ export default function DayModal({ year, month, day, monthData, onClose }: Props
             </button>
           ))}
         </div>
-        <div className='max-h-[72vh] overflow-y-auto'>
+        <div className='overflow-y-auto flex-1'>
           {tab==='trades'  && <TradesPanel  year={year} month={month} day={day} dateKey={key} existingTrades={monthData.trades[key]||[]} />}
           {tab==='news'    && <NewsPanel    year={year} month={month} day={day} />}
           {tab==='journal' && <JournalPanel year={year} month={month} day={day} existing={monthData.notes[key]||null} />}

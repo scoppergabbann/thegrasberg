@@ -9,7 +9,7 @@ interface Props {
 export default async function CalendarPage({ searchParams }: Props) {
   const now   = new Date()
   const year  = parseInt(searchParams.year  ?? String(now.getFullYear()))
-  const month = parseInt(searchParams.month ?? String(now.getMonth()))   // 0-indexed
+  const month = parseInt(searchParams.month ?? String(now.getMonth()))
 
   const [trades, notes, psych] = await Promise.all([
     getMonthTrades(year, month),
@@ -34,13 +34,13 @@ export default async function CalendarPage({ searchParams }: Props) {
   const winRate  = trades.length ? Math.round(wins / trades.length * 100) : 0
 
   return (
-    <div className='max-w-4xl mx-auto space-y-5'>
+    <div className='max-w-4xl mx-auto space-y-4 sm:space-y-5'>
       <div>
-        <h1 className='text-xl font-semibold text-zinc-100'>Trading Calendar</h1>
-        <p className='text-sm text-zinc-500 mt-0.5'>Klik tanggal untuk tambah trade, lihat news, atau tulis journal</p>
+        <h1 className='text-lg sm:text-xl font-semibold text-zinc-100'>Trading Calendar</h1>
+        <p className='text-xs sm:text-sm text-zinc-500 mt-0.5'>Klik tanggal untuk tambah trade, lihat news, atau tulis journal</p>
       </div>
 
-      <div className='grid grid-cols-4 gap-3' role='region' aria-label='Statistik bulan ini'>
+      <div className='grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3' role='region' aria-label='Statistik bulan ini'>
         {[
           { label:'Month PNL',    value: (totalPnl >= 0 ? '+' : '') + '$' + Math.abs(totalPnl).toFixed(2), cls: totalPnl >= 0 ? 'text-green-400' : 'text-red-400' },
           { label:'Total Trades', value: String(trades.length),  cls: 'text-zinc-200' },
@@ -48,7 +48,7 @@ export default async function CalendarPage({ searchParams }: Props) {
           { label:'Journal Days', value: String(notes.length),   cls: 'text-amber-400' },
         ].map(s => (
           <div key={s.label} className='stat-card'>
-            <p className={`mono text-lg font-semibold ${s.cls}`}>{s.value}</p>
+            <p className={`mono text-base sm:text-lg font-semibold ${s.cls}`}>{s.value}</p>
             <p className='text-xs text-zinc-500 mt-0.5'>{s.label}</p>
           </div>
         ))}
