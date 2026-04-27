@@ -46,7 +46,7 @@ export default function Sidebar({ open, mobileOpen, onMobileClose }: Props) {
               <TrendingUp className='w-3.5 h-3.5 text-green-400' />
             </div>
             <div className={cn('min-w-0 transition-opacity', !open && 'lg:opacity-0 lg:invisible lg:w-0')}>
-              <p className='mono text-sm font-semibold text-green-400 leading-none truncate'>FX Journal</p>
+              <p className='mono text-sm font-semibold text-green-400 leading-none truncate'>The Grasberg</p>
               <p className='text-xs text-zinc-600 mt-0.5'>v2 · Supabase</p>
             </div>
           </div>
@@ -87,7 +87,7 @@ export default function Sidebar({ open, mobileOpen, onMobileClose }: Props) {
 
         <div className={cn('mt-auto px-2 pt-4 border-t border-zinc-800 transition-all', !open && 'lg:hidden')}>
           <p className='text-xs text-zinc-600 leading-relaxed'>
-            Data tersimpan di <span className='text-zinc-500'>Supabase</span>.
+            Copyright © 2026 - Created By <span className='text-zinc-500'>McFawwaz</span>.
           </p>
         </div>
       </aside>
