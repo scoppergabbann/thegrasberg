@@ -27,7 +27,7 @@ export default async function PsychHistoryPage() {
       {results.length===0 ? (
         <div className='card p-12 text-center'>
           <p className='text-zinc-400 font-medium'>Belum ada psych test</p>
-          <p className='text-xs text-zinc-600 mt-1'>Kalender → klik hari → tab "Psych Test"</p>
+          <p className='text-xs text-zinc-600 mt-1'>Kalender → klik hari → tab Psych Test</p>
         </div>
       ) : (
         <ul className='space-y-3' role='list'>

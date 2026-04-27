@@ -42,7 +42,7 @@ export default function CalendarGrid({ year, month, monthData, selectedDay, onSe
           return (
             <button key={day} role='gridcell'
               aria-label={`${day} ${MONTH_ID[month]} ${year}${hasT?`, PNL ${pnl>=0?'+':''}$${Math.abs(pnl).toFixed(2)}`:''}${hasNote?', ada journal':''}${ni!=='none'?`, news ${ni}`:''}`}
-              aria-pressed={isSel} onClick={()=>onSelectDay(day)}
+              aria-pressed={true} onClick={()=>onSelectDay(day)}
               className={cn(
                 'relative min-h-[76px] rounded-lg border p-1.5 text-left transition-all focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-green-500 hover:border-zinc-600',
                 wknd ? 'bg-[#0d0d0d] border-zinc-800/50' : 'bg-[#111] border-zinc-800',
