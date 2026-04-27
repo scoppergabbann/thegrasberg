@@ -1,0 +1,55 @@
+
+export type Direction   = 'BUY' | 'SELL'
+export type Session     = 'Asia' | 'London' | 'New York' | 'London/NY'
+export type NewsImpact  = 'high' | 'medium' | 'low'
+export type Mood        = 'Focused' | 'Confident' | 'Anxious' | 'FOMO' | 'Revenge'
+export type TagType     = 'mistake' | 'good'
+export type PsychVerdict = 'SIAP TRADING' | 'KONDISI CUKUP' | 'WASPADA' | 'JANGAN TRADING'
+
+export interface Trade {
+  id:          string
+  trade_date:  string
+  pair:        string
+  direction:   Direction
+  pnl:         number
+  lot_size:    number | null
+  session:     Session
+  note:        string
+  created_at?: string
+}
+export interface Tag      { type: TagType; value: string }
+export interface DayNote  {
+  id?:         string
+  note_date:   string
+  mood:        Mood | null
+  analysis:    string
+  execution:   string
+  lesson:      string
+  tags:        Tag[]
+  updated_at?: string
+}
+export interface NewsEvent {
+  time: string; currency: string; title: string; impact: NewsImpact
+  previous?: string; forecast?: string; description: string
+}
+export interface PsychOption  { text: string; score: number; level: 'good' | 'warn' | 'bad' }
+export interface PsychQuestion { question: string; subtitle: string; options: PsychOption[] }
+export interface PsychResult {
+  id?:          string
+  result_date:  string
+  score:        number
+  max_score:    number
+  percentage:   number
+  verdict:      PsychVerdict
+  allowed:      boolean
+  feedback:     Array<{ type: 'good' | 'warn' | 'bad'; text: string }>
+  created_at?:  string
+}
+export interface MonthData {
+  trades:       Record<string, Trade[]>
+  notes:        Record<string, DayNote>
+  psychResults: Record<string, PsychResult>
+}
+export interface GlobalStats {
+  pnl: number; winRate: number; journalDays: number; totalTrades: number
+}
