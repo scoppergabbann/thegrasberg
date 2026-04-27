@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { CalendarDays, BookOpen, Brain, BarChart3, List, TrendingUp, X } from 'lucide-react'
+import { CalendarDays, BookOpen, Brain, BarChart3, List, Calculator, TrendingUp, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const NAV = [
   { href:'/',              icon:CalendarDays, label:'Calendar',      desc:'PNL harian' },
+  { href:'/calculator',    icon:Calculator,   label:'Calculator',    desc:'Risk/Reward' },
   { href:'/journal',       icon:BookOpen,     label:'Daily Journal', desc:'Analisa & refleksi' },
   { href:'/psych-history', icon:Brain,        label:'Psych History', desc:'Riwayat psikotes' },
   { href:'/analytics',     icon:BarChart3,    label:'Analytics',     desc:'Statistik performa' },
@@ -14,8 +15,8 @@ const NAV = [
 ]
 
 interface Props {
-  open:        boolean    // desktop collapsed/expanded
-  mobileOpen:  boolean    // mobile drawer open
+  open:        boolean
+  mobileOpen:  boolean
   onMobileClose: () => void
 }
 
@@ -24,29 +25,21 @@ export default function Sidebar({ open, mobileOpen, onMobileClose }: Props) {
 
   return (
     <>
-      {/* Mobile overlay */}
       {mobileOpen && (
-        <div
-          className='fixed inset-0 z-40 bg-black/60 lg:hidden'
-          onClick={onMobileClose}
-          aria-hidden='true'
-        />
+        <div className='fixed inset-0 z-40 bg-black/60 lg:hidden' onClick={onMobileClose} aria-hidden='true' />
       )}
 
       <aside
         id='primary-nav'
         className={cn(
           'bg-[#0d0d0d] border-r border-zinc-800 flex flex-col py-5 px-3 shrink-0 transition-all duration-200 ease-out',
-          // Mobile: fixed drawer, slides in from left
           'fixed inset-y-0 left-0 z-50 w-64 lg:static lg:z-auto',
           mobileOpen ? 'translate-x-0' : '-translate-x-full',
           'lg:translate-x-0',
-          // Desktop: collapsible width
           open ? 'lg:w-56' : 'lg:w-16',
         )}
         aria-label='Navigasi utama'
       >
-        {/* Header with mobile-only close button */}
         <div className='px-2 mb-6 flex items-center justify-between'>
           <div className='flex items-center gap-2 min-w-0'>
             <div className='w-7 h-7 rounded-lg bg-green-950 border border-green-800 flex items-center justify-center shrink-0' aria-hidden='true'>
@@ -58,7 +51,6 @@ export default function Sidebar({ open, mobileOpen, onMobileClose }: Props) {
             </div>
           </div>
 
-          {/* Close button only on mobile */}
           <button
             onClick={onMobileClose}
             className='lg:hidden w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800'

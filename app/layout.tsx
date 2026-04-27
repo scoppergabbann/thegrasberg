@@ -4,7 +4,7 @@ import { getGlobalStats } from '@/lib/db'
 import AppShell from '@/components/layout/AppShell'
 
 export const metadata: Metadata = {
-  title: 'FX Journal — Forex Trading Journal',
+  title: 'The Grasberg — Forex Trading Journal',
   description: 'Track forex trades, daily journal, psychology tests & economic news.',
 }
 
