@@ -1,4 +1,3 @@
-
 export type Direction   = 'BUY' | 'SELL'
 export type Session     = 'Asia' | 'London' | 'New York' | 'London/NY'
 export type NewsImpact  = 'high' | 'medium' | 'low'
@@ -33,7 +32,17 @@ export interface NewsEvent {
   previous?: string; forecast?: string; description: string
 }
 export interface PsychOption  { text: string; score: number; level: 'good' | 'warn' | 'bad' }
-export interface PsychQuestion { question: string; subtitle: string; options: PsychOption[] }
+export interface PsychQuestion {
+  id?:        string
+  question:   string
+  subtitle:   string
+  options:    PsychOption[]
+  sort_order?: number
+  is_active?: boolean
+  is_default?: boolean
+  created_at?: string
+  updated_at?: string
+}
 export interface PsychResult {
   id?:          string
   result_date:  string

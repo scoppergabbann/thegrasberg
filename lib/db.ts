@@ -116,3 +116,60 @@ export async function getMonthStats(year: number, month: number) {
   const winRate = trades.length ? Math.round(wins / trades.length * 100) : 0
   return { totalPnl, totalTrades: trades.length, winRate, journalDays: notes.length, psychDays: psych.length }
 }
+
+// ── PSYCH QUESTIONS (CRUD) ────────────────────────────────────
+import type { PsychQuestion } from '@/types'
+
+export async function getActivePsychQuestions(): Promise<PsychQuestion[]> {
+  const { data, error } = await supabase
+    .from('psych_questions')
+    .select('*')
+    .eq('is_active', true)
+    .order('sort_order', { ascending: true })
+  if (error) throw error
+  return (data ?? []) as PsychQuestion[]
+}
+
+export async function getAllPsychQuestions(): Promise<PsychQuestion[]> {
+  const { data, error } = await supabase
+    .from('psych_questions')
+    .select('*')
+    .order('sort_order', { ascending: true })
+  if (error) throw error
+  return (data ?? []) as PsychQuestion[]
+}
+
+export async function createPsychQuestion(q: Omit<PsychQuestion, 'id' | 'created_at' | 'updated_at'>): Promise<PsychQuestion> {
+  const { data, error } = await supabase
+    .from('psych_questions')
+    .insert({ ...q, updated_at: new Date().toISOString() })
+    .select()
+    .single()
+  if (error) throw error
+  return data as PsychQuestion
+}
+
+export async function updatePsychQuestion(id: string, q: Partial<PsychQuestion>): Promise<PsychQuestion> {
+  const { data, error } = await supabase
+    .from('psych_questions')
+    .update({ ...q, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return data as PsychQuestion
+}
+
+export async function deletePsychQuestion(id: string): Promise<void> {
+  const { error } = await supabase.from('psych_questions').delete().eq('id', id)
+  if (error) throw error
+}
+
+export async function reorderPsychQuestions(ids: string[]): Promise<void> {
+  // Update sort_order based on array position
+  await Promise.all(
+    ids.map((id, idx) =>
+      supabase.from('psych_questions').update({ sort_order: idx + 1 }).eq('id', id)
+    )
+  )
+}
