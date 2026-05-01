@@ -2,21 +2,23 @@
 
 import { useUIControls } from '@/components/ui/UIControls'
 import Sidebar from './Sidebar'
-import Header  from './Header'
+import Header from './Header'
 import type { GlobalStats } from '@/types'
 import type { ReactNode } from 'react'
 
 interface Props {
-  stats:    GlobalStats
+  stats: GlobalStats
+  username: string
   children: ReactNode
 }
 
-export default function AppShell({ stats, children }: Props) {
+export default function AppShell({ stats, username, children }: Props) {
   const { fz, zoomIn, zoomOut, reset, sidebarOpen, setSidebar, mobileOpen, setMobileOpen } = useUIControls()
 
   return (
     <div className='flex h-screen overflow-hidden'>
       <Sidebar
+        username={username}
         open={sidebarOpen}
         mobileOpen={mobileOpen}
         onMobileClose={() => setMobileOpen(false)}

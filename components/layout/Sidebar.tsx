@@ -4,38 +4,32 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   CalendarDays, BookOpen, Brain, BarChart3, List,
-  Calculator, TrendingUp, X, ClipboardList, Settings,
+  Calculator, TrendingUp, X, ClipboardList, Settings, LogOut, User,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { actionLogout } from '@/lib/auth-actions'
 
 const NAV = [
-  // Daily activities
-  { href:'/',                icon:CalendarDays,  label:'Calendar',      desc:'PNL & trade harian',     section:'Trading' },
-  { href:'/calculator',      icon:Calculator,    label:'Calculator',    desc:'Risk/Reward',            section:'Trading' },
-  { href:'/all-trades',      icon:List,          label:'All Trades',    desc:'Riwayat semua trade',    section:'Trading' },
-
-  // Mind/journal
-  { href:'/psych-test',      icon:Brain,         label:'Psych Test',    desc:'Cek mental sebelum trading', section:'Mental' },
-  { href:'/journal',         icon:BookOpen,      label:'Daily Journal', desc:'Refleksi harian',         section:'Mental' },
-
-  // History & analytics
-  { href:'/psych-history',   icon:ClipboardList, label:'Psych History', desc:'Riwayat hasil psikotes', section:'History' },
-  { href:'/analytics',       icon:BarChart3,     label:'Analytics',     desc:'Statistik performa',     section:'History' },
-
-  // Settings
-  { href:'/psych-questions', icon:Settings,      label:'Pertanyaan Psych', desc:'Kelola kriteria',     section:'Pengaturan' },
+  { href:'/',                icon:CalendarDays,  label:'Calendar',         desc:'PNL & trade harian',         section:'Trading' },
+  { href:'/calculator',      icon:Calculator,    label:'Calculator',       desc:'Risk/Reward',                section:'Trading' },
+  { href:'/all-trades',      icon:List,          label:'All Trades',       desc:'Riwayat semua trade',        section:'Trading' },
+  { href:'/psych-test',      icon:Brain,         label:'Psych Test',       desc:'Cek mental sebelum trading', section:'Mental' },
+  { href:'/journal',         icon:BookOpen,      label:'Daily Journal',    desc:'Refleksi harian',            section:'Mental' },
+  { href:'/psych-history',   icon:ClipboardList, label:'Psych History',    desc:'Riwayat hasil psikotes',     section:'History' },
+  { href:'/analytics',       icon:BarChart3,     label:'Analytics',        desc:'Statistik performa',         section:'History' },
+  { href:'/psych-questions', icon:Settings,      label:'Pertanyaan Psych', desc:'Kelola kriteria',            section:'Pengaturan' },
 ]
 
 interface Props {
-  open:        boolean
-  mobileOpen:  boolean
+  username: string
+  open: boolean
+  mobileOpen: boolean
   onMobileClose: () => void
 }
 
-export default function Sidebar({ open, mobileOpen, onMobileClose }: Props) {
+export default function Sidebar({ username, open, mobileOpen, onMobileClose }: Props) {
   const path = usePathname()
 
-  // Group by section
   const grouped: Record<string, typeof NAV> = {}
   NAV.forEach(item => {
     if (!grouped[item.section]) grouped[item.section] = []
@@ -70,11 +64,9 @@ export default function Sidebar({ open, mobileOpen, onMobileClose }: Props) {
             </div>
           </div>
 
-          <button
-            onClick={onMobileClose}
+          <button onClick={onMobileClose}
             className='lg:hidden w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800'
-            aria-label='Tutup menu'
-          >
+            aria-label='Tutup menu'>
             <X className='w-4 h-4' aria-hidden='true' />
           </button>
         </div>
@@ -83,24 +75,18 @@ export default function Sidebar({ open, mobileOpen, onMobileClose }: Props) {
           <div className='space-y-4'>
             {Object.entries(grouped).map(([section, items]) => (
               <div key={section}>
-                <p className={cn(
-                  'px-3 mb-1.5 text-xs font-semibold text-zinc-600 uppercase tracking-wider',
-                  !open && 'lg:hidden'
-                )}>
+                <p className={cn('px-3 mb-1.5 text-xs font-semibold text-zinc-600 uppercase tracking-wider', !open && 'lg:hidden')}>
                   {section}
                 </p>
                 <ul className='space-y-0.5' role='list'>
-                  {items.map(({ href, icon:Icon, label, desc }) => {
+                  {items.map(({ href, icon: Icon, label, desc }) => {
                     const active = path === href
                     return (
                       <li key={href}>
-                        <Link
-                          href={href}
-                          onClick={onMobileClose}
+                        <Link href={href} onClick={onMobileClose}
                           className={cn('nav-link w-full', active && 'active', !open && 'lg:justify-center lg:px-2')}
                           aria-current={active ? 'page' : undefined}
-                          title={!open ? label : undefined}
-                        >
+                          title={!open ? label : undefined}>
                           <Icon className='w-4 h-4 shrink-0' aria-hidden='true' />
                           <div className={cn('min-w-0 transition-all', !open && 'lg:hidden')}>
                             <p className='text-sm font-medium leading-none'>{label}</p>
@@ -116,10 +102,33 @@ export default function Sidebar({ open, mobileOpen, onMobileClose }: Props) {
           </div>
         </nav>
 
-        <div className={cn('mt-auto px-2 pt-3 border-t border-zinc-800 transition-all', !open && 'lg:hidden')}>
-          <p className='text-xs text-zinc-600 leading-relaxed'>
-            Data tersimpan di <span className='text-zinc-500'>Supabase</span>.
-          </p>
+        {/* User section + Logout */}
+        <div className='mt-auto pt-3 border-t border-zinc-800'>
+          <div className={cn(
+            'flex items-center gap-2 px-2 py-2 rounded-lg',
+            !open && 'lg:justify-center lg:px-2'
+          )}>
+            <div className='w-7 h-7 rounded-full bg-zinc-800 flex items-center justify-center shrink-0' aria-hidden='true'>
+              <User className='w-3.5 h-3.5 text-zinc-400' />
+            </div>
+            <div className={cn('min-w-0 flex-1 transition-all', !open && 'lg:hidden')}>
+              <p className='text-sm font-medium text-zinc-200 truncate'>{username}</p>
+              <p className='text-xs text-zinc-600'>Signed in</p>
+            </div>
+          </div>
+          <form action={actionLogout}>
+            <button
+              type='submit'
+              className={cn(
+                'mt-1 nav-link w-full text-red-400 hover:text-red-300 hover:bg-red-950/40',
+                !open && 'lg:justify-center lg:px-2'
+              )}
+              title={!open ? 'Logout' : undefined}
+            >
+              <LogOut className='w-4 h-4 shrink-0' aria-hidden='true' />
+              <span className={cn('text-sm font-medium', !open && 'lg:hidden')}>Logout</span>
+            </button>
+          </form>
         </div>
       </aside>
     </>

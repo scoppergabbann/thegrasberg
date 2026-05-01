@@ -5,11 +5,16 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { MONTHS } from '@/lib/constants'
 import CalendarGrid from './CalendarGrid'
 import DayModal    from './DayModal'
-import type { MonthData } from '@/types'
+import type { MonthData, NewsEvent } from '@/types'
 
-interface Props { year: number; month: number; monthData: MonthData }
+interface Props {
+  year: number
+  month: number
+  monthData: MonthData
+  newsByDate: Record<string, NewsEvent[]>
+}
 
-export default function CalendarShell({ year, month, monthData }: Props) {
+export default function CalendarShell({ year, month, monthData, newsByDate }: Props) {
   const router = useRouter()
   const [selDay, setSelDay] = useState<number | null>(null)
 
@@ -25,23 +30,17 @@ export default function CalendarShell({ year, month, monthData }: Props) {
   return (
     <>
       <div className='flex items-center justify-center gap-4' role='navigation' aria-label='Navigasi bulan'>
-        <button
-          onClick={() => navigate(-1)}
+        <button onClick={() => navigate(-1)}
           className='w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-500 transition-all focus-visible:outline-2 focus-visible:outline-zinc-400'
-          aria-label='Bulan sebelumnya'
-        >
+          aria-label='Bulan sebelumnya'>
           <ChevronLeft className='w-4 h-4' aria-hidden='true' />
         </button>
-
         <h2 className='mono text-base font-semibold text-zinc-100 min-w-[160px] text-center' aria-live='polite'>
           {MONTHS[month]} {year}
         </h2>
-
-        <button
-          onClick={() => navigate(1)}
+        <button onClick={() => navigate(1)}
           className='w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-500 transition-all focus-visible:outline-2 focus-visible:outline-zinc-400'
-          aria-label='Bulan berikutnya'
-        >
+          aria-label='Bulan berikutnya'>
           <ChevronRight className='w-4 h-4' aria-hidden='true' />
         </button>
       </div>
@@ -50,6 +49,7 @@ export default function CalendarShell({ year, month, monthData }: Props) {
         <CalendarGrid
           year={year} month={month}
           monthData={monthData}
+          newsByDate={newsByDate}
           selectedDay={selDay}
           onSelectDay={setSelDay}
         />
@@ -72,11 +72,7 @@ export default function CalendarShell({ year, month, monthData }: Props) {
       </div>
 
       {selDay && (
-        <DayModal
-          year={year} month={month} day={selDay}
-          monthData={monthData}
-          onClose={() => setSelDay(null)}
-        />
+        <DayModal year={year} month={month} day={selDay} monthData={monthData} onClose={() => setSelDay(null)} />
       )}
     </>
   )

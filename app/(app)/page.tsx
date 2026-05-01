@@ -1,25 +1,28 @@
 import { getMonthTrades, getMonthNotes, getMonthPsych } from '@/lib/db'
+import { fetchMonthEvents } from '@/lib/news-api'
+import { NEWS_DB } from '@/lib/constants'
 import CalendarShell from '@/components/calendar/CalendarShell'
-import type { MonthData } from '@/types'
+import type { MonthData, NewsEvent } from '@/types'
 
-// Always fetch fresh — no caching
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-interface Props {
-  searchParams: { year?: string; month?: string }
-}
+interface Props { searchParams: { year?: string; month?: string } }
 
 export default async function CalendarPage({ searchParams }: Props) {
   const now   = new Date()
   const year  = parseInt(searchParams.year  ?? String(now.getFullYear()))
   const month = parseInt(searchParams.month ?? String(now.getMonth()))
 
-  const [trades, notes, psych] = await Promise.all([
+  const [trades, notes, psych, liveNews] = await Promise.all([
     getMonthTrades(year, month),
     getMonthNotes(year, month),
     getMonthPsych(year, month),
+    fetchMonthEvents(year, month).catch(() => ({})),
   ])
+
+  // Merge: live news for current/future months, static NEWS_DB for past months as fallback
+  const newsByDate: Record<string, NewsEvent[]> = { ...NEWS_DB, ...liveNews }
 
   const tradeMap: MonthData['trades'] = {}
   trades.forEach(t => {
@@ -48,10 +51,10 @@ export default async function CalendarPage({ searchParams }: Props) {
 
       <div className='grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3' role='region' aria-label='Statistik bulan ini'>
         {[
-          { label:'Month PNL',    value: (totalPnl >= 0 ? '+' : '') + '$' + Math.abs(totalPnl).toFixed(2), cls: totalPnl >= 0 ? 'text-green-400' : 'text-red-400' },
-          { label:'Total Trades', value: String(trades.length),  cls: 'text-zinc-200' },
-          { label:'Win Rate',     value: `${winRate}%`,          cls: winRate >= 50 ? 'text-green-400' : 'text-red-400' },
-          { label:'Journal Days', value: String(notes.length),   cls: 'text-amber-400' },
+          { label: 'Month PNL',    value: (totalPnl >= 0 ? '+' : '') + '$' + Math.abs(totalPnl).toFixed(2), cls: totalPnl >= 0 ? 'text-green-400' : 'text-red-400' },
+          { label: 'Total Trades', value: String(trades.length),  cls: 'text-zinc-200' },
+          { label: 'Win Rate',     value: `${winRate}%`,           cls: winRate >= 50 ? 'text-green-400' : 'text-red-400' },
+          { label: 'Journal Days', value: String(notes.length),    cls: 'text-amber-400' },
         ].map(s => (
           <div key={s.label} className='stat-card'>
             <p className={`mono text-base sm:text-lg font-semibold ${s.cls}`}>{s.value}</p>
@@ -60,7 +63,7 @@ export default async function CalendarPage({ searchParams }: Props) {
         ))}
       </div>
 
-      <CalendarShell year={year} month={month} monthData={monthData} />
+      <CalendarShell year={year} month={month} monthData={monthData} newsByDate={newsByDate} />
     </div>
   )
 }

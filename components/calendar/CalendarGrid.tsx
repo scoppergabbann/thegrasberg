@@ -1,22 +1,30 @@
 import { cn } from '@/lib/utils'
-import { NEWS_DB } from '@/lib/constants'
-import type { MonthData } from '@/types'
+import type { MonthData, NewsEvent } from '@/types'
 
 const DAYS  = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 const MONTH_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']
 
-function newsImpact(key: string) {
-  const ev = NEWS_DB[key] || []
-  return ev.some(e=>e.impact==='high') ? 'high' : ev.some(e=>e.impact==='medium') ? 'medium' : ev.length ? 'low' : 'none'
+function newsImpact(events: NewsEvent[]) {
+  if (!events?.length) return 'none'
+  if (events.some(e => e.impact === 'high'))   return 'high'
+  if (events.some(e => e.impact === 'medium')) return 'medium'
+  return 'low'
 }
 
-interface Props { year:number; month:number; monthData:MonthData; selectedDay:number|null; onSelectDay:(d:number)=>void }
+interface Props {
+  year:        number
+  month:       number
+  monthData:   MonthData
+  newsByDate:  Record<string, NewsEvent[]>
+  selectedDay: number | null
+  onSelectDay: (d: number) => void
+}
 
-export default function CalendarGrid({ year, month, monthData, selectedDay, onSelectDay }: Props) {
-  const firstDay = new Date(year,month,1).getDay()
-  const dim      = new Date(year,month+1,0).getDate()
+export default function CalendarGrid({ year, month, monthData, newsByDate, selectedDay, onSelectDay }: Props) {
+  const firstDay = new Date(year, month, 1).getDay()
+  const dim      = new Date(year, month + 1, 0).getDate()
   const today    = new Date()
-  const isNow    = today.getFullYear()===year && today.getMonth()===month
+  const isNow    = today.getFullYear() === year && today.getMonth() === month
 
   return (
     <div role='grid' aria-label='Kalender trading'>
@@ -29,49 +37,50 @@ export default function CalendarGrid({ year, month, monthData, selectedDay, onSe
         ))}
       </div>
       <div className='grid grid-cols-7 gap-1'>
-        {Array.from({length:firstDay}).map((_,i) => <div key={`e${i}`} aria-hidden='true' />)}
-        {Array.from({length:dim},(_,i)=>i+1).map(day => {
-          const key    = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`
+        {Array.from({ length: firstDay }).map((_, i) => <div key={`e${i}`} aria-hidden='true' />)}
+        {Array.from({ length: dim }, (_, i) => i + 1).map(day => {
+          const key    = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
           const trades = monthData.trades[key] || []
-          const pnl    = trades.reduce((a,t)=>a+Number(t.pnl),0)
+          const pnl    = trades.reduce((a, t) => a + Number(t.pnl), 0)
           const hasNote  = !!monthData.notes[key]
           const hasPsych = !!monthData.psychResults[key]
-          const ni     = newsImpact(key)
-          const dow    = new Date(year,month,day).getDay()
-          const wknd   = dow===0||dow===6
-          const isToday= isNow && today.getDate()===day
-          const isSel  = selectedDay===day
+          const ni     = newsImpact(newsByDate[key] || [])
+          const dow    = new Date(year, month, day).getDay()
+          const wknd   = dow === 0 || dow === 6
+          const isToday = isNow && today.getDate() === day
+          const isSel  = selectedDay === day
           const hasT   = trades.length > 0
 
           return (
             <button key={day} role='gridcell'
-              aria-label={`${day} ${MONTH_ID[month]} ${year}${hasT?`, PNL ${pnl>=0?'+':''}$${Math.abs(pnl).toFixed(2)}`:''}${hasNote?', ada journal':''}${ni!=='none'?`, news ${ni}`:''}`}
-              aria-pressed={isSel} onClick={()=>onSelectDay(day)}
+              aria-label={`${day} ${MONTH_ID[month]} ${year}${hasT ? `, PNL ${pnl >= 0 ? '+' : ''}$${Math.abs(pnl).toFixed(2)}` : ''}${hasNote ? ', ada journal' : ''}${ni !== 'none' ? `, news ${ni}` : ''}`}
+              aria-pressed={isSel} onClick={() => onSelectDay(day)}
               className={cn(
                 'relative min-h-[60px] sm:min-h-[76px] rounded-md sm:rounded-lg border p-1 sm:p-1.5 text-left transition-all focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-green-500 hover:border-zinc-600',
                 wknd ? 'bg-[#0d0d0d] border-zinc-800/50' : 'bg-[#111] border-zinc-800',
-                hasT && pnl>=0  && 'bg-green-950/40 border-green-900/60',
-                hasT && pnl<0   && 'bg-red-950/40 border-red-900/60',
+                hasT && pnl >= 0  && 'bg-green-950/40 border-green-900/60',
+                hasT && pnl < 0   && 'bg-red-950/40 border-red-900/60',
                 hasNote && 'border-amber-700/50',
                 isToday && 'ring-1 ring-zinc-500',
                 isSel   && 'ring-2 ring-green-500',
               )}>
-              <span className={cn('mono text-xs font-medium block', isToday?'text-white':'text-zinc-400')}>{day}</span>
+              <span className={cn('mono text-xs font-medium block', isToday ? 'text-white' : 'text-zinc-400')}>{day}</span>
               {hasT && (
                 <>
-                  <span className={cn('mono text-xs font-semibold block mt-0.5 sm:mt-1 truncate', pnl>=0?'text-green-400':'text-red-400')}>
-                    <span className='hidden sm:inline'>{pnl>=0?'+':''}${Math.abs(pnl).toFixed(2)}</span>
-                    <span className='sm:hidden'>{pnl>=0?'+':''}${Math.abs(pnl) >= 1000 ? Math.round(Math.abs(pnl)/100)/10+'k' : Math.round(Math.abs(pnl))}</span>
+                  <span className={cn('mono text-xs font-semibold block mt-0.5 sm:mt-1 truncate', pnl >= 0 ? 'text-green-400' : 'text-red-400')}>
+                    <span className='hidden sm:inline'>{pnl >= 0 ? '+' : ''}${Math.abs(pnl).toFixed(2)}</span>
+                    <span className='sm:hidden'>{pnl >= 0 ? '+' : ''}${Math.abs(pnl) >= 1000 ? Math.round(Math.abs(pnl) / 100) / 10 + 'k' : Math.round(Math.abs(pnl))}</span>
                   </span>
                   <span className='text-xs text-zinc-500 block'>{trades.length}T</span>
                 </>
               )}
               <div className='absolute top-1 right-1 sm:top-1.5 sm:right-1.5 flex flex-col gap-0.5 items-end'>
                 {hasNote  && <span className='w-1.5 h-1.5 rounded-full bg-amber-400' aria-hidden='true' />}
-                {hasPsych && <span className='w-1.5 h-1.5 rounded-full bg-blue-400'  aria-hidden='true' />}
+                {hasPsych && <span className='w-1.5 h-1.5 rounded-full bg-blue-400' aria-hidden='true' />}
               </div>
-              {ni!=='none' && (
-                <span className={cn('absolute bottom-1 right-1 sm:bottom-1.5 sm:right-1.5 w-1.5 h-1.5 rounded-full', ni==='high'?'bg-red-500':ni==='medium'?'bg-amber-500':'bg-zinc-500')} aria-hidden='true' />
+              {ni !== 'none' && (
+                <span className={cn('absolute bottom-1 right-1 sm:bottom-1.5 sm:right-1.5 w-1.5 h-1.5 rounded-full',
+                  ni === 'high' ? 'bg-red-500' : ni === 'medium' ? 'bg-amber-500' : 'bg-zinc-500')} aria-hidden='true' />
               )}
             </button>
           )
