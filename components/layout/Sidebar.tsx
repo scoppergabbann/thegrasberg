@@ -4,20 +4,21 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   CalendarDays, BookOpen, Brain, BarChart3, List,
-  Calculator, TrendingUp, X, ClipboardList, Settings, LogOut, User,
+  Calculator, TrendingUp, X, ClipboardList, Settings, LogOut, User, GraduationCap,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { actionLogout } from '@/lib/auth-actions'
 
 const NAV = [
-  { href:'/',                icon:CalendarDays,  label:'Calendar',         desc:'PNL & trade harian',         section:'Trading' },
-  { href:'/calculator',      icon:Calculator,    label:'Calculator',       desc:'Risk/Reward',                section:'Trading' },
-  { href:'/all-trades',      icon:List,          label:'All Trades',       desc:'Riwayat semua trade',        section:'Trading' },
-  { href:'/psych-test',      icon:Brain,         label:'Psych Test',       desc:'Cek mental sebelum trading', section:'Mental' },
-  { href:'/journal',         icon:BookOpen,      label:'Daily Journal',    desc:'Refleksi harian',            section:'Mental' },
-  { href:'/psych-history',   icon:ClipboardList, label:'Psych History',    desc:'Riwayat hasil psikotes',     section:'History' },
-  { href:'/analytics',       icon:BarChart3,     label:'Analytics',        desc:'Statistik performa',         section:'History' },
-  { href:'/psych-questions', icon:Settings,      label:'Pertanyaan Psych', desc:'Kelola kriteria',            section:'Pengaturan' },
+  { href:'/',                icon:CalendarDays,   label:'Calendar',         desc:'PNL & trade harian',         section:'Trading' },
+  { href:'/calculator',      icon:Calculator,     label:'Calculator',       desc:'Risk/Reward',                section:'Trading' },
+  { href:'/all-trades',      icon:List,           label:'All Trades',       desc:'Riwayat semua trade',        section:'Trading' },
+  { href:'/psych-test',      icon:Brain,          label:'Psych Test',       desc:'Cek mental sebelum trading', section:'Mental' },
+  { href:'/journal',         icon:BookOpen,       label:'Daily Journal',    desc:'Refleksi harian',            section:'Mental' },
+  { href:'/lessons',         icon:GraduationCap,  label:'Lesson & Learn',   desc:'Insight dari trader lain',   section:'Mental' },
+  { href:'/psych-history',   icon:ClipboardList,  label:'Psych History',    desc:'Riwayat hasil psikotes',     section:'History' },
+  { href:'/analytics',       icon:BarChart3,      label:'Analytics',        desc:'Statistik performa',         section:'History' },
+  { href:'/psych-questions', icon:Settings,       label:'Pertanyaan Psych', desc:'Kelola kriteria',            section:'Pengaturan' },
 ]
 
 interface Props {
@@ -102,7 +103,6 @@ export default function Sidebar({ username, open, mobileOpen, onMobileClose }: P
           </div>
         </nav>
 
-        {/* User section + Logout */}
         <div className='mt-auto pt-3 border-t border-zinc-800'>
           <div className={cn(
             'flex items-center gap-2 px-2 py-2 rounded-lg',
