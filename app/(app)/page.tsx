@@ -1,8 +1,6 @@
 import { getMonthTrades, getMonthNotes, getMonthPsych } from '@/lib/db'
-import { fetchMonthEvents } from '@/lib/news-api'
-import { NEWS_DB } from '@/lib/constants'
 import CalendarShell from '@/components/calendar/CalendarShell'
-import type { MonthData, NewsEvent } from '@/types'
+import type { MonthData } from '@/types'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -14,15 +12,11 @@ export default async function CalendarPage({ searchParams }: Props) {
   const year  = parseInt(searchParams.year  ?? String(now.getFullYear()))
   const month = parseInt(searchParams.month ?? String(now.getMonth()))
 
-  const [trades, notes, psych, liveNews] = await Promise.all([
+  const [trades, notes, psych] = await Promise.all([
     getMonthTrades(year, month),
     getMonthNotes(year, month),
     getMonthPsych(year, month),
-    fetchMonthEvents(year, month).catch(() => ({})),
   ])
-
-  // Merge: live news for current/future months, static NEWS_DB for past months as fallback
-  const newsByDate: Record<string, NewsEvent[]> = { ...NEWS_DB, ...liveNews }
 
   const tradeMap: MonthData['trades'] = {}
   trades.forEach(t => {
@@ -45,7 +39,7 @@ export default async function CalendarPage({ searchParams }: Props) {
       <div>
         <h1 className='text-lg sm:text-xl font-semibold text-zinc-100'>Trading Calendar</h1>
         <p className='text-xs sm:text-sm text-zinc-500 mt-0.5'>
-          Klik tanggal untuk tambah trade, lihat news, atau tulis journal
+          Klik tanggal untuk tambah trade atau lihat ringkasan harian
         </p>
       </div>
 
@@ -63,7 +57,7 @@ export default async function CalendarPage({ searchParams }: Props) {
         ))}
       </div>
 
-      <CalendarShell year={year} month={month} monthData={monthData} newsByDate={newsByDate} />
+      <CalendarShell year={year} month={month} monthData={monthData} />
     </div>
   )
 }

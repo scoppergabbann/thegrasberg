@@ -1,26 +1,18 @@
 import { cn } from '@/lib/utils'
-import type { MonthData, NewsEvent } from '@/types'
+import type { MonthData } from '@/types'
 
 const DAYS  = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 const MONTH_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']
-
-function newsImpact(events: NewsEvent[]) {
-  if (!events?.length) return 'none'
-  if (events.some(e => e.impact === 'high'))   return 'high'
-  if (events.some(e => e.impact === 'medium')) return 'medium'
-  return 'low'
-}
 
 interface Props {
   year:        number
   month:       number
   monthData:   MonthData
-  newsByDate:  Record<string, NewsEvent[]>
   selectedDay: number | null
   onSelectDay: (d: number) => void
 }
 
-export default function CalendarGrid({ year, month, monthData, newsByDate, selectedDay, onSelectDay }: Props) {
+export default function CalendarGrid({ year, month, monthData, selectedDay, onSelectDay }: Props) {
   const firstDay = new Date(year, month, 1).getDay()
   const dim      = new Date(year, month + 1, 0).getDate()
   const today    = new Date()
@@ -39,21 +31,20 @@ export default function CalendarGrid({ year, month, monthData, newsByDate, selec
       <div className='grid grid-cols-7 gap-1'>
         {Array.from({ length: firstDay }).map((_, i) => <div key={`e${i}`} aria-hidden='true' />)}
         {Array.from({ length: dim }, (_, i) => i + 1).map(day => {
-          const key    = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-          const trades = monthData.trades[key] || []
-          const pnl    = trades.reduce((a, t) => a + Number(t.pnl), 0)
+          const key      = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+          const trades   = monthData.trades[key] || []
+          const pnl      = trades.reduce((a, t) => a + Number(t.pnl), 0)
           const hasNote  = !!monthData.notes[key]
           const hasPsych = !!monthData.psychResults[key]
-          const ni     = newsImpact(newsByDate[key] || [])
-          const dow    = new Date(year, month, day).getDay()
-          const wknd   = dow === 0 || dow === 6
-          const isToday = isNow && today.getDate() === day
-          const isSel  = selectedDay === day
-          const hasT   = trades.length > 0
+          const dow      = new Date(year, month, day).getDay()
+          const wknd     = dow === 0 || dow === 6
+          const isToday  = isNow && today.getDate() === day
+          const isSel    = selectedDay === day
+          const hasT     = trades.length > 0
 
           return (
             <button key={day} role='gridcell'
-              aria-label={`${day} ${MONTH_ID[month]} ${year}${hasT ? `, PNL ${pnl >= 0 ? '+' : ''}$${Math.abs(pnl).toFixed(2)}` : ''}${hasNote ? ', ada journal' : ''}${ni !== 'none' ? `, news ${ni}` : ''}`}
+              aria-label={`${day} ${MONTH_ID[month]} ${year}${hasT ? `, PNL ${pnl >= 0 ? '+' : ''}$${Math.abs(pnl).toFixed(2)}` : ''}${hasNote ? ', ada journal' : ''}`}
               aria-pressed={isSel} onClick={() => onSelectDay(day)}
               className={cn(
                 'relative min-h-[60px] sm:min-h-[76px] rounded-md sm:rounded-lg border p-1 sm:p-1.5 text-left transition-all focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-green-500 hover:border-zinc-600',
@@ -78,10 +69,6 @@ export default function CalendarGrid({ year, month, monthData, newsByDate, selec
                 {hasNote  && <span className='w-1.5 h-1.5 rounded-full bg-amber-400' aria-hidden='true' />}
                 {hasPsych && <span className='w-1.5 h-1.5 rounded-full bg-blue-400' aria-hidden='true' />}
               </div>
-              {ni !== 'none' && (
-                <span className={cn('absolute bottom-1 right-1 sm:bottom-1.5 sm:right-1.5 w-1.5 h-1.5 rounded-full',
-                  ni === 'high' ? 'bg-red-500' : ni === 'medium' ? 'bg-amber-500' : 'bg-zinc-500')} aria-hidden='true' />
-              )}
             </button>
           )
         })}

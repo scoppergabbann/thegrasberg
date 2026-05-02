@@ -5,16 +5,15 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { MONTHS } from '@/lib/constants'
 import CalendarGrid from './CalendarGrid'
 import DayModal    from './DayModal'
-import type { MonthData, NewsEvent } from '@/types'
+import type { MonthData } from '@/types'
 
 interface Props {
   year: number
   month: number
   monthData: MonthData
-  newsByDate: Record<string, NewsEvent[]>
 }
 
-export default function CalendarShell({ year, month, monthData, newsByDate }: Props) {
+export default function CalendarShell({ year, month, monthData }: Props) {
   const router = useRouter()
   const [selDay, setSelDay] = useState<number | null>(null)
 
@@ -49,7 +48,6 @@ export default function CalendarShell({ year, month, monthData, newsByDate }: Pr
         <CalendarGrid
           year={year} month={month}
           monthData={monthData}
-          newsByDate={newsByDate}
           selectedDay={selDay}
           onSelectDay={setSelDay}
         />
@@ -61,8 +59,6 @@ export default function CalendarShell({ year, month, monthData, newsByDate }: Pr
           ['bg-red-500/50',  'Loss'],
           ['bg-amber-400',   'Journal'],
           ['bg-blue-400',    'Psych test'],
-          ['bg-red-500',     'High news'],
-          ['bg-amber-500',   'Med news'],
         ].map(([c, l]) => (
           <span key={l} className='flex items-center gap-1.5'>
             <span className={`w-2 h-2 rounded-full ${c} inline-block`} aria-hidden='true' />

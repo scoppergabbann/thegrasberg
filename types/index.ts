@@ -1,16 +1,12 @@
 export type Direction    = 'BUY' | 'SELL'
 export type Session      = 'Asia' | 'London' | 'New York' | 'London/NY'
-export type NewsImpact   = 'high' | 'medium' | 'low'
 export type Mood         = 'Focused' | 'Confident' | 'Anxious' | 'FOMO' | 'Revenge'
 export type TagType      = 'mistake' | 'good'
 export type SetupType    = 'Breakout' | 'Pullback' | 'Reversal' | 'News' | 'Range' | 'Trend' | 'Other'
 export type PsychVerdict = 'SIAP TRADING' | 'KONDISI CUKUP' | 'WASPADA' | 'JANGAN TRADING'
 export type SourceType   = 'youtube' | 'book' | 'podcast' | 'article' | 'twitter' | 'course' | 'other'
 
-export interface Highlight {
-  text:       string
-  timestamp?: string   // mis: '12:45' untuk video, atau 'p.234' untuk buku
-}
+export interface Highlight { text: string; timestamp?: string }
 
 export interface Lesson {
   id?:           string
@@ -23,7 +19,7 @@ export interface Lesson {
   my_notes:      string
   takeaway:      string
   tags:          string[]
-  rating:        number      // 0-5
+  rating:        number
   is_favorite:   boolean
   date_consumed: string | null
   duration_min:  number | null
@@ -49,8 +45,9 @@ export interface Trade {
   custom_tags:  string[]
   created_at?:  string
 }
-export interface Tag      { type: TagType; value: string }
-export interface DayNote  {
+
+export interface Tag { type: TagType; value: string }
+export interface DayNote {
   id?:         string
   note_date:   string
   mood:        Mood | null
@@ -60,9 +57,36 @@ export interface DayNote  {
   tags:        Tag[]
   updated_at?: string
 }
-export interface NewsEvent { time: string; currency: string; title: string; impact: NewsImpact; previous?: string; forecast?: string; description: string }
-export interface PsychOption  { text: string; score: number; level: 'good' | 'warn' | 'bad' }
-export interface PsychQuestion { id?: string; question: string; subtitle: string; options: PsychOption[]; sort_order?: number; is_active?: boolean; is_default?: boolean; created_at?: string; updated_at?: string }
-export interface PsychResult { id?: string; result_date: string; score: number; max_score: number; percentage: number; verdict: PsychVerdict; allowed: boolean; feedback: Array<{ type: 'good' | 'warn' | 'bad'; text: string }>; created_at?: string }
-export interface MonthData { trades: Record<string, Trade[]>; notes: Record<string, DayNote>; psychResults: Record<string, PsychResult> }
-export interface GlobalStats { pnl: number; winRate: number; journalDays: number; totalTrades: number }
+
+export interface PsychOption { text: string; score: number; level: 'good' | 'warn' | 'bad' }
+export interface PsychQuestion {
+  id?:         string
+  question:    string
+  subtitle:    string
+  options:     PsychOption[]
+  sort_order?: number
+  is_active?:  boolean
+  is_default?: boolean
+  created_at?: string
+  updated_at?: string
+}
+export interface PsychResult {
+  id?:         string
+  result_date: string
+  score:       number
+  max_score:   number
+  percentage:  number
+  verdict:     PsychVerdict
+  allowed:     boolean
+  feedback:    Array<{ type: 'good' | 'warn' | 'bad'; text: string }>
+  created_at?: string
+}
+
+export interface MonthData {
+  trades:       Record<string, Trade[]>
+  notes:        Record<string, DayNote>
+  psychResults: Record<string, PsychResult>
+}
+export interface GlobalStats {
+  pnl: number; winRate: number; journalDays: number; totalTrades: number
+}

@@ -1,23 +1,14 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { X, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import { MONTHS } from '@/lib/constants'
-import { cn } from '@/lib/utils'
 import TradesPanel from './TradesPanel'
-import NewsPanel   from '../news/NewsPanel'
 import type { MonthData } from '@/types'
-
-type Tab = 'trades' | 'news'
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'trades', label: 'Trades' },
-  { id: 'news',   label: 'News' },
-]
 
 interface Props { year: number; month: number; day: number; monthData: MonthData; onClose: () => void }
 
 export default function DayModal({ year, month, day, monthData, onClose }: Props) {
-  const [tab, setTab] = useState<Tab>('trades')
   const ref = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
   const key = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
@@ -90,25 +81,8 @@ export default function DayModal({ year, month, day, monthData, onClose }: Props
           </div>
         )}
 
-        <div className='flex border-b border-zinc-800 shrink-0' role='tablist' aria-label='Panel hari ini'>
-          {TABS.map(t => (
-            <button
-              key={t.id} role='tab' id={`tab-${t.id}`}
-              aria-selected={tab === t.id} aria-controls={`panel-${t.id}`}
-              onClick={() => setTab(t.id)}
-              className={cn(
-                'flex-1 py-2.5 text-xs font-medium transition-all focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-green-500',
-                tab === t.id ? 'text-green-400 border-b-2 border-green-500' : 'text-zinc-500 hover:text-zinc-300'
-              )}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-
         <div className='overflow-y-auto flex-1'>
-          {tab === 'trades' && <TradesPanel year={year} month={month} day={day} dateKey={key} existingTrades={monthData.trades[key] || []} />}
-          {tab === 'news'   && <NewsPanel year={year} month={month} day={day} />}
+          <TradesPanel year={year} month={month} day={day} dateKey={key} existingTrades={monthData.trades[key] || []} />
         </div>
       </div>
     </div>
